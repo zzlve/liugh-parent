@@ -4,7 +4,7 @@
 
 [Mybatis-Plus](https://github.com/baomidou/mybatis-plus)是一个 [Mybatis](http://www.mybatis.org/mybatis-3/) 的增强工具，有代码生成器，并且提供了类似hibernate的单表CRUD操作，又保留了mybatis的特性支持定制化 SQL。
 
-[Apache Shiro](https://shiro.apache.org/)是一款强大易用的Java安全框架，Java官方推荐使用Shiro，它比Spring Security更简单易用，Spring自己的系列Spring side4也把权限扩建换成Shiro了。
+[Apache Shiro](https://shiro.apache.org/)是一款强大易用的Java安全框架。
 
 现在API越来越流行，如何安全保护这些API？ [JSON Web Tokens](https://jwt.io/)(JWT)能提供基于JSON格式的安全认证。JWT可以跨不同语言，自带身份信息，并且非常容易传递。
 
@@ -24,7 +24,7 @@
 
      ![](https://static.oschina.net/uploads/space/2018/0512/234950_u2kv_3577599.png)
 
-6.用SpringAOP切面编程进行声明式事务(service层增删改方法命名规范会自动加上事物)，过滤请求参数，防止XSS攻击。
+6.用SpringAOP切面编程进行声明式事务(service层增删改方法命名规范会自动加上事务)，过滤请求参数，防止XSS攻击。
 
 7.使用POST请求登录返回token和权限信息，保证请求无状态，返回实体如果属性为空不显示。
 
@@ -63,8 +63,10 @@
 
     
 -   访问登录接口：localhost:8081/api/v1/login
-    
--   账号密码：{"identity":"13888888888","password":"123456"}或 {"identity":"admin","password":"123456"}
+
+    ![](https://oscimg.oschina.net/oscnet/up-9460c43beb289b58643ff389029dca368ca.png)
+
+-   Content-Type用application/json方式，账号密码：{"identity":"13888888888","password":"123456"}或 {"identity":"admin","password":"123456"}
 或 {"identity":"53182347@qq.com","password":"123456"}(管理员)
     
 -   获取token访问其他接口
@@ -76,7 +78,8 @@
 
 ![](https://oscimg.oschina.net/oscnet/e734e53d9c9e92665fc8eae18168f845686.jpg)
 
-彩蛋：项目注释完整，并且自定义了启动图案~
-
 
 第一次做自己的项目，经验不足，如果大家有什么好的意见或批评，请务必issue一下。
+
+加博主进交流群，一起优化进步（或wx搜索：53182347）：
+![](https://oscimg.oschina.net/oscnet/up-82beddfedc2723fc46f04606ac698792659.png)
