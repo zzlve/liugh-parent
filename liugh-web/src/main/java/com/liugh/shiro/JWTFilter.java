@@ -179,19 +179,21 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     /**
      * 非法url返回身份错误信息
      */
-    private void responseError(ServletRequest request, ServletResponse response) {
-        PrintWriter out = null;
+       private void responseError(ServletRequest request, ServletResponse response) {
+        Writer out= null;
         try {
-            response.setCharacterEncoding("utf-8");
-            out = response.getWriter();
-            response.setContentType("application/json; charset=utf-8");
-            out.print(JSONObject.toJSONString(ResponseHelper.validationFailure(PublicResultConstant.UNAUTHORIZED)));
+            out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(),"utf-8"));
+            out.write(JSONObject.toJSONString(ResponseManage.fail(ErrorCodeEnum.SESSION_TIMEOUT.getErrorCode(), ErrorCodeEnum.SESSION_TIMEOUT.getErrorDesc())));
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (out != null) {
-                out.close();
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
