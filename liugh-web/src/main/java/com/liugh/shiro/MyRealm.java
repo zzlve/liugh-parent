@@ -102,6 +102,6 @@ public class MyRealm extends AuthorizingRealm {
         if (! JWTUtil.verify(token, userNo, userBean.getPassword())) {
             throw new AuthenticationException("Username or password error");
         }
-        return new SimpleAuthenticationInfo(token, token, this.getName());
+        return new SimpleAuthenticationInfo(userBean, token, this.getName());
     }
 }

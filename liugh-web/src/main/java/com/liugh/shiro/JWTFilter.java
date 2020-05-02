@@ -11,6 +11,7 @@ import com.liugh.util.ComUtil;
 import com.liugh.util.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
@@ -80,12 +81,11 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     }
 
     private void setUserBean(ServletRequest request, ServletResponse response, JWTToken token) {
-        if (this.userService == null) {
-            this.userService = SpringContextBeanService.getBean(IUserService.class);
+        Object principal = SecurityUtils.getSubject().getPrincipal();
+        if(principal instanceof User ){
+            User userBean =(User)principal;
+            request.setAttribute("currentUser", userBean);
         }
-        String userNo =  JWTUtil.getUserNo(token.getPrincipal().toString());
-        User userBean = userService.selectById(userNo);
-        request.setAttribute("currentUser", userBean);
     }
 
     /**
