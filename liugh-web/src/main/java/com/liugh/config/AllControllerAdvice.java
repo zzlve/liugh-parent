@@ -3,7 +3,6 @@ package com.liugh.config;
 import com.liugh.base.BusinessException;
 import com.liugh.base.PublicResultConstant;
 import com.liugh.exception.ParamJsonException;
-import com.liugh.exception.UnauthorizedException;
 import org.apache.shiro.ShiroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,17 +44,6 @@ public class AllControllerAdvice {
         ex.printStackTrace();
         logger.error("接口出现严重异常：{}", ex.getMessage());
         return ResponseHelper.validationFailure(PublicResultConstant.FAILED);
-    }
-
-    /**
-     * 捕捉UnauthorizedException
-     * @return
-     */
-    @ResponseStatus(HttpStatus.OK)
-    @ExceptionHandler(UnauthorizedException.class)
-    @ResponseBody
-    public ResponseModel<String> handleUnauthorized() {
-        return ResponseHelper.validationFailure(PublicResultConstant.USER_NO_PERMITION);
     }
 
     /**

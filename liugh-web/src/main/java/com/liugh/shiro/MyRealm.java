@@ -1,15 +1,13 @@
 package com.liugh.shiro;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.liugh.base.Constant;
 import com.liugh.entity.Menu;
-import com.liugh.entity.Role;
 import com.liugh.entity.User;
 import com.liugh.entity.UserToRole;
-import com.liugh.exception.UnauthorizedException;
 import com.liugh.service.*;
 import com.liugh.util.ComUtil;
 import com.liugh.util.JWTUtil;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
@@ -84,7 +82,7 @@ public class MyRealm extends AuthorizingRealm {
      * 默认使用此方法进行用户名正确与否验证，错误抛出异常即可。
      */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws UnauthorizedException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
         if (userService == null) {
             this.userService = SpringContextBeanService.getBean(IUserService.class);
         }
@@ -95,14 +93,14 @@ public class MyRealm extends AuthorizingRealm {
         // 解密获得username，用于和数据库进行对比
         String userNo = JWTUtil.getUserNo(token);
         if (userNo == null) {
-            throw new UnauthorizedException("token invalid");
+            throw new AuthenticationException("token invalid");
         }
         User userBean = userService.selectById(userNo);
         if (userBean == null) {
-            throw new UnauthorizedException("User didn't existed!");
+            throw new AuthenticationException("User didn't existed!");
         }
         if (! JWTUtil.verify(token, userNo, userBean.getPassword())) {
-            throw new UnauthorizedException("Username or password error");
+            throw new AuthenticationException("Username or password error");
         }
         return new SimpleAuthenticationInfo(token, token, this.getName());
     }

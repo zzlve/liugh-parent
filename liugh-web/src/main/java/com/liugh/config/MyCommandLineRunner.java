@@ -162,13 +162,15 @@ public class MyCommandLineRunner implements CommandLineRunner {
 			}
 		}
 		File dir = new File(url.getFile());
-		for (File file : dir.listFiles()) {
-			if(file.isDirectory()){
-				//递归读取包
-				doScanner(packageName+"."+file.getName());
-			}else{
-				String className =packageName +"." +file.getName().replace(".class", "");
-				Constant.METHOD_URL_SET.add(className);
+		if(!ComUtil.isEmpty(dir)){
+			for (File file : dir.listFiles()) {
+				if(file.isDirectory()){
+					//递归读取包
+					doScanner(packageName+"."+file.getName());
+				}else{
+					String className =packageName +"." +file.getName().replace(".class", "");
+					Constant.METHOD_URL_SET.add(className);
+				}
 			}
 		}
 	}

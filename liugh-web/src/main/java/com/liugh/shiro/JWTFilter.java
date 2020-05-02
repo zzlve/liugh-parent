@@ -9,7 +9,9 @@ import com.liugh.service.IUserService;
 import com.liugh.service.SpringContextBeanService;
 import com.liugh.util.ComUtil;
 import com.liugh.util.JWTUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,13 +20,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
+import java.io.*;
 
 /**
  * @author grm
  *
  * 代码的执行流程preHandle->isAccessAllowed->isLoginAttempt->executeLogin
  */
+@Slf4j
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 
     private IUserService userService;
@@ -43,7 +46,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      *
      */
     @Override
-    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
+    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws AuthenticationException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String authorization = httpServletRequest.getHeader("Authorization");
         JWTToken token = new JWTToken(authorization);
@@ -68,8 +71,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         if (isLoginAttempt(request, response)) {
             try {
                 executeLogin(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (AuthenticationException e) {
+                log.info(e.getMessage());
                 responseError(request, response);
             }
         }
@@ -181,14 +184,24 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
        private void responseError(ServletRequest request, ServletResponse response) {
         Writer out= null;
+        OutputStreamWriter outputStreamWriter =null;
         try {
-            out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(),"utf-8"));
-            out.write(JSONObject.toJSONString(ResponseManage.fail(ErrorCodeEnum.SESSION_TIMEOUT.getErrorCode(), ErrorCodeEnum.SESSION_TIMEOUT.getErrorDesc())));
+            outputStreamWriter = new OutputStreamWriter(response.getOutputStream(), "utf-8");
+            response.setContentType("application/json; charset=utf-8");
+            out = new BufferedWriter(outputStreamWriter);
+            out.write(JSONObject.toJSONString(ResponseHelper.validationFailure(PublicResultConstant.UNAUTHORIZED)));
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (out != null) {
+            if(null !=  outputStreamWriter){
+                try {
+                    outputStreamWriter.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != out) {
                 try {
                     out.close();
                 } catch (IOException e) {
