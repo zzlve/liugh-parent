@@ -2,7 +2,7 @@ package com.liugh.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.liugh.base.BusinessException;
-import com.liugh.base.PublicResultConstant;
+import com.liugh.base.CodeEnum;
 import com.liugh.base.SmsSendResponse;
 import com.liugh.entity.SmsVerify;
 import com.liugh.mapper.SmsVerifyMapper;
@@ -39,7 +39,7 @@ public class SmsVerifyServiceImpl extends ServiceImpl<SmsVerifyMapper, SmsVerify
     @Override
     public SmsVerify addAndGetMobileAndCaptcha(String smsType, String mobile) throws Exception {
         if(!StringUtil.checkMobileNumber(mobile)){
-            throw new BusinessException(PublicResultConstant.MOBILE_ERROR);
+            throw new BusinessException(CodeEnum.MOBILE_ERROR.getMsg(),CodeEnum.MOBILE_ERROR.getCode());
         }
         String randNum = GenerationSequenceUtil.getRandNum(4);
         SmsSendResponse smsSendResponse = SmsSendUtil.sendMessage(mobile,
@@ -53,15 +53,15 @@ public class SmsVerifyServiceImpl extends ServiceImpl<SmsVerifyMapper, SmsVerify
     @Override
     public void captchaCheck(String mobile,String smsType, String captcha) throws Exception {
         if(!StringUtil.checkMobileNumber(mobile)){
-            throw new BusinessException(PublicResultConstant.MOBILE_ERROR);
+            throw new BusinessException(CodeEnum.MOBILE_ERROR.getMsg(),CodeEnum.MOBILE_ERROR.getCode());
         }
         List<SmsVerify> smsVerifies = this.getByMobileAndCaptchaAndType(mobile,
                 captcha,SmsSendUtil.SMSType.getType(smsType));
         if(ComUtil.isEmpty(smsVerifies)){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_ERROR);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_ERROR.getMsg(),CodeEnum.VERIFY_PARAM_ERROR.getCode());
         }
         if(SmsSendUtil.isCaptchaPassTime(smsVerifies.get(0).getCreateTime())){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_PASS);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_PASS.getMsg(),CodeEnum.VERIFY_PARAM_PASS.getCode());
         }
     }
 }

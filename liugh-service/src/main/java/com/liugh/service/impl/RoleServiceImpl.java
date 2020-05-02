@@ -2,8 +2,8 @@ package com.liugh.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.liugh.base.BusinessException;
+import com.liugh.base.CodeEnum;
 import com.liugh.base.Constant;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.entity.Menu;
 import com.liugh.entity.RoleToMenu;
 import com.liugh.entity.UserToRole;
@@ -51,7 +51,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         BeanUtils.copyProperties(roleModel,role);
         boolean result = this.insert(role);
         if (! result) {
-            throw  new BusinessException(PublicResultConstant.UPDATE_ROLEINFO_ERROR);
+            throw  new BusinessException(CodeEnum.UPDATE_ROLEINFO_ERROR.getMsg(),CodeEnum.UPDATE_ROLEINFO_ERROR.getCode());
         }
         result = roleToMenuService.saveAll(role.getRoleCode(), roleModel.getMenuCodes());
         return result;
@@ -61,7 +61,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     public boolean updateRoleInfo(RoleModel roleModel) throws Exception{
         if (roleModel.getRoleCode().equals(
                 this.selectOne(new EntityWrapper<Role>().eq("role_name",Constant.RoleType.SYS_ASMIN_ROLE)).getRoleCode())){
-            throw  new BusinessException(PublicResultConstant.UPDATE_SYSADMIN_INFO_ERROR);
+            throw  new BusinessException(CodeEnum.ADMIN_ERROR.getMsg(),CodeEnum.ADMIN_ERROR.getCode());
         }
         Role role = this.selectById(roleModel.getRoleCode());
         if (ComUtil.isEmpty(role)) {
@@ -70,7 +70,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         BeanUtils.copyProperties(roleModel,role);
         boolean result = this.updateById(role);
         if (! result) {
-            throw  new BusinessException(PublicResultConstant.UPDATE_ROLEINFO_ERROR);
+            throw  new BusinessException(CodeEnum.UPDATE_ROLEINFO_ERROR.getMsg(),CodeEnum.UPDATE_ROLEINFO_ERROR.getCode());
         }
         result = roleToMenuService.delete(new EntityWrapper<RoleToMenu>().eq("role_code",roleModel.getRoleCode()));
         if (! result) {
@@ -89,7 +89,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         UserToRole userToRole = userToRoleService.selectByUserNo(userNo);
         Role role = this.selectById(userToRole.getRoleCode());
         if(role.getRoleName().equals(Constant.RoleType.SYS_ASMIN_ROLE)){
-            throw new BusinessException(PublicResultConstant.UPDATE_SYSADMIN_INFO_ERROR);
+            throw new BusinessException(CodeEnum.ADMIN_ERROR.getMsg(),CodeEnum.ADMIN_ERROR.getCode());
         }
     }
 
@@ -97,7 +97,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     public Map<String, Object> selectByRoleCode(String roleCode) throws Exception {
         Role role = this.selectById(roleCode);
         if(ComUtil.isEmpty(role)){
-            throw new BusinessException(PublicResultConstant.INVALID_ROLE);
+            throw new BusinessException(CodeEnum.INVALID_ROLE.getMsg(),CodeEnum.INVALID_ROLE.getCode());
         }
         Map<String, Object> result = new HashMap<>();
         result.put("role", role);

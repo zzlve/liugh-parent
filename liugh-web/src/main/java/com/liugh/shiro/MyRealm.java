@@ -55,9 +55,10 @@ public class MyRealm extends AuthorizingRealm {
 
         String userNo = JWTUtil.getUserNo(principals.toString());
         User user = userService.selectById(userNo);
-        UserToRole userToRole = userToRoleService.selectByUserNo(user.getUserNo());
-
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
+        if(null != user){
+            UserToRole userToRole = userToRoleService.selectByUserNo(user.getUserNo());
+
         /*
         Role role = roleService.selectOne(new EntityWrapper<Role>().eq("role_code", userToRole.getRoleCode()));
         //添加控制角色级别的权限
@@ -65,16 +66,17 @@ public class MyRealm extends AuthorizingRealm {
         roleNameSet.add(role.getRoleName());
         simpleAuthorizationInfo.addRoles(roleNameSet);
         */
-        //控制菜单级别按钮  类中用@RequiresPermissions("user:list") 对应数据库中code字段来控制controller
-        ArrayList<String> pers = new ArrayList<>();
-        List<Menu> menuList = menuService.findMenuByRoleCode(userToRole.getRoleCode());
-        for (Menu per : menuList) {
-             if (!ComUtil.isEmpty(per.getCode())) {
-                  pers.add(String.valueOf(per.getCode()));
-              }
+            //控制菜单级别按钮  类中用@RequiresPermissions("user:list") 对应数据库中code字段来控制controller
+            ArrayList<String> pers = new ArrayList<>();
+            List<Menu> menuList = menuService.findMenuByRoleCode(userToRole.getRoleCode());
+            for (Menu per : menuList) {
+                if (!ComUtil.isEmpty(per.getCode())) {
+                    pers.add(String.valueOf(per.getCode()));
+                }
+            }
+            Set<String> permission = new HashSet<>(pers);
+            simpleAuthorizationInfo.addStringPermissions(permission);
         }
-        Set<String> permission = new HashSet<>(pers);
-        simpleAuthorizationInfo.addStringPermissions(permission);
         return simpleAuthorizationInfo;
     }
 

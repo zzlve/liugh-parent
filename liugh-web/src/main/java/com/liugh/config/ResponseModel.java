@@ -13,7 +13,6 @@ import java.io.Serializable;
 
 public class ResponseModel<T> implements Serializable {
     private static final long serialVersionUID = -1241360949457314497L;
-    private int status;
     private T result;
     private String message;
     private String code;
@@ -22,6 +21,12 @@ public class ResponseModel<T> implements Serializable {
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getResponse();
         response.setCharacterEncoding("UTF-8");
+    }
+
+    public ResponseModel(T result, String message, String code) {
+        this.result = result;
+        this.message = message;
+        this.code = code;
     }
 
     public String getMessage() {
@@ -41,13 +46,6 @@ public class ResponseModel<T> implements Serializable {
     }
 
 
-    public int getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
 
     public T getResult() {
         return this.result;
@@ -58,6 +56,6 @@ public class ResponseModel<T> implements Serializable {
     }
 
     public String toString() {
-        return "ResponseModel [status=" + this.status + ", result=" + this.result +  ", message=" + this.message + ", code=" + this.code + "]";
+        return "ResponseModel [ result=" + this.result +  ", message=" + this.message + ", code=" + this.code + "]";
     }
 }

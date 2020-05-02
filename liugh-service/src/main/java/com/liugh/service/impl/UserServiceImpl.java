@@ -5,15 +5,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.liugh.base.BusinessException;
+import com.liugh.base.CodeEnum;
 import com.liugh.base.Constant;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.entity.*;
 import com.liugh.service.*;
 import com.liugh.mapper.UserMapper;
 import com.liugh.util.*;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -106,7 +105,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void deleteByUserNo(String userNo) throws Exception{
         User user = this.selectById(userNo);
         if (ComUtil.isEmpty(user)) {
-            throw new BusinessException(PublicResultConstant.INVALID_USER);
+            throw new BusinessException(CodeEnum.INVALID_USER.getMsg(),CodeEnum.INVALID_USER.getCode());
         }
         EntityWrapper<UserToRole> ew = new EntityWrapper<>();
         ew.eq("user_no", userNo);
@@ -126,11 +125,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String identity = requestJson.getString("identity");
         InfoToUser infoToUser = infoToUserService.selectOne(new EntityWrapper<InfoToUser>().eq("identity_info ", identity));
         if(ComUtil.isEmpty(infoToUser)){
-            throw new BusinessException(PublicResultConstant.INVALID_USER);
+            throw new BusinessException(CodeEnum.INVALID_USER.getMsg(),CodeEnum.INVALID_USER.getCode());
         }
         User user = this.selectOne(new EntityWrapper<User>().where("user_no = {0} and status = 1",infoToUser.getUserNo()));
         if (ComUtil.isEmpty(user) || !BCrypt.checkpw(requestJson.getString("password"), user.getPassword())) {
-            throw new BusinessException(PublicResultConstant.INVALID_USERNAME_PASSWORD);
+            throw new BusinessException(CodeEnum.INVALID_USERNAME_PASSWORD.getMsg(),CodeEnum.INVALID_USERNAME_PASSWORD.getCode());
         }
         //测试websocket用户登录给管理员发送消息的例子  前端代码参考父目录下WebSocketDemo.html
 //        noticeService.insertByThemeNo("themeNo-cwr3fsxf233edasdfcf2s3","13888888888");
@@ -144,7 +143,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public Map<String, Object> checkMobileAndCatcha(JSONObject requestJson) throws Exception {
         String mobile = requestJson.getString("mobile");
         if(!StringUtil.checkMobileNumber(mobile)){
-            throw new BusinessException(PublicResultConstant.MOBILE_ERROR);
+            throw new BusinessException(CodeEnum.MOBILE_ERROR.getMsg(),CodeEnum.MOBILE_ERROR.getCode());
         }
         User user = this.getUserByMobile(mobile);
         //如果不是启用的状态
@@ -154,10 +153,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         List<SmsVerify> smsVerifies = smsVerifyService.getByMobileAndCaptchaAndType(mobile,
                 requestJson.getString("captcha"), SmsSendUtil.SMSType.getType(SmsSendUtil.SMSType.AUTH.name()));
         if(ComUtil.isEmpty(smsVerifies)){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_ERROR);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_ERROR.getMsg(),CodeEnum.VERIFY_PARAM_ERROR.getCode());
         }
         if(SmsSendUtil.isCaptchaPassTime(smsVerifies.get(0).getCreateTime())){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_PASS);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_PASS.getMsg(),CodeEnum.VERIFY_PARAM_PASS.getCode());
         }
         if (ComUtil.isEmpty(user)) {
             //设置默认密码
@@ -173,19 +172,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         //可直接转为java对象,简化操作,不用再set一个个属性
         User userRegister = requestJson.toJavaObject(User.class);
         if(!StringUtil.checkMobileNumber(userRegister.getMobile())){
-            throw new BusinessException(PublicResultConstant.MOBILE_ERROR);
+            throw new BusinessException(CodeEnum.MOBILE_ERROR.getMsg(),CodeEnum.MOBILE_ERROR.getCode());
         }
         if (!userRegister.getPassword().equals(requestJson.getString("rePassword"))) {
-            throw new BusinessException(PublicResultConstant.INVALID_RE_PASSWORD);
+            throw new BusinessException(CodeEnum.INVALID_RE_PASSWORD.getMsg(),CodeEnum.INVALID_RE_PASSWORD.getCode());
         }
         List<SmsVerify> smsVerifies = smsVerifyService.getByMobileAndCaptchaAndType(userRegister.getMobile(),
                 requestJson.getString("captcha"), SmsSendUtil.SMSType.getType(SmsSendUtil.SMSType.REG.name()));
         if(ComUtil.isEmpty(smsVerifies)){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_ERROR);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_ERROR.getMsg(),CodeEnum.VERIFY_PARAM_ERROR.getCode());
         }
         //验证码是否过期
         if(SmsSendUtil.isCaptchaPassTime(smsVerifies.get(0).getCreateTime())){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_PASS);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_PASS.getMsg(),CodeEnum.VERIFY_PARAM_PASS.getCode());
         }
         userRegister.setPassword(BCrypt.hashpw(requestJson.getString("password"), BCrypt.gensalt()));
         User registerUser = this.register(userRegister, Constant.RoleType.USER);
@@ -199,23 +198,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public User updateForgetPasswd(JSONObject requestJson) throws Exception {
         String mobile = requestJson.getString("mobile");
         if(!StringUtil.checkMobileNumber(mobile)){
-            throw new BusinessException(PublicResultConstant.MOBILE_ERROR);
+            throw new BusinessException(CodeEnum.MOBILE_ERROR.getMsg(),CodeEnum.MOBILE_ERROR.getCode());
         }
         if (!requestJson.getString("password").equals(requestJson.getString("rePassword"))) {
-            throw new BusinessException(PublicResultConstant.INVALID_RE_PASSWORD);
+            throw new BusinessException(CodeEnum.INVALID_RE_PASSWORD.getMsg(),CodeEnum.INVALID_RE_PASSWORD.getCode());
         }
         User user = this.getUserByMobile(mobile);
         roleService.getRoleIsAdminByUserNo(user.getUserNo());
         if(ComUtil.isEmpty(user)){
-            throw new BusinessException(PublicResultConstant.INVALID_USER);
+            throw new BusinessException(CodeEnum.INVALID_USER.getMsg(),CodeEnum.INVALID_USER.getCode());
         }
         List<SmsVerify> smsVerifies = smsVerifyService.getByMobileAndCaptchaAndType(mobile,
                 requestJson.getString("captcha"), SmsSendUtil.SMSType.getType(SmsSendUtil.SMSType.FINDPASSWORD.name()));
         if(ComUtil.isEmpty(smsVerifies)){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_ERROR);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_ERROR.getMsg(),CodeEnum.VERIFY_PARAM_ERROR.getCode());
         }
         if(SmsSendUtil.isCaptchaPassTime(smsVerifies.get(0).getCreateTime())){
-            throw new BusinessException(PublicResultConstant.VERIFY_PARAM_PASS);
+            throw new BusinessException(CodeEnum.VERIFY_PARAM_PASS.getMsg(),CodeEnum.VERIFY_PARAM_PASS.getCode());
         }
         user.setPassword(BCrypt.hashpw(requestJson.getString("password"),BCrypt.gensalt()));
         this.updateById(user);
@@ -226,15 +225,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public void resetMobile(User currentUser, JSONObject requestJson) throws Exception {
         String newMobile = requestJson.getString("newMobile");
         if(!StringUtil.checkMobileNumber(newMobile)){
-          throw  new BusinessException(PublicResultConstant.MOBILE_ERROR);
+          throw  new BusinessException(CodeEnum.MOBILE_ERROR.getMsg(),CodeEnum.MOBILE_ERROR.getCode());
         }
         List<SmsVerify> smsVerifies = smsVerifyService.getByMobileAndCaptchaAndType(newMobile,
                 requestJson.getString("captcha"), SmsSendUtil.SMSType.getType(SmsSendUtil.SMSType.MODIFYINFO.name()));
         if(ComUtil.isEmpty(smsVerifies)){
-            throw  new BusinessException(PublicResultConstant.VERIFY_PARAM_ERROR);
+            throw  new BusinessException(CodeEnum.VERIFY_PARAM_ERROR.getMsg(),CodeEnum.VERIFY_PARAM_ERROR.getCode());
         }
         if(SmsSendUtil.isCaptchaPassTime(smsVerifies.get(0).getCreateTime())){
-            throw  new BusinessException(PublicResultConstant.VERIFY_PARAM_PASS);
+            throw  new BusinessException(CodeEnum.VERIFY_PARAM_PASS.getMsg(),CodeEnum.VERIFY_PARAM_PASS.getCode());
         }
         currentUser.setMobile(newMobile);
         this.updateById(currentUser);
@@ -243,10 +242,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public void resetPassWord(User currentUser, JSONObject requestJson) throws Exception {
         if (!requestJson.getString("password").equals(requestJson.getString("rePassword"))) {
-            throw  new BusinessException(PublicResultConstant.INVALID_RE_PASSWORD);
+            throw  new BusinessException(CodeEnum.INVALID_RE_PASSWORD.getMsg(),CodeEnum.INVALID_RE_PASSWORD.getCode());
         }
         if(!BCrypt.checkpw(requestJson.getString("oldPassword"),currentUser.getPassword())){
-            throw  new BusinessException(PublicResultConstant.INVALID_USERNAME_PASSWORD);
+            throw  new BusinessException(CodeEnum.INVALID_USERNAME_PASSWORD.getMsg(),CodeEnum.INVALID_USERNAME_PASSWORD.getCode());
         }
         currentUser.setPassword(BCrypt.hashpw(requestJson.getString("password"),BCrypt.gensalt()));
         this.updateById(currentUser);
@@ -256,17 +255,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     public User insertUserByAdmin(JSONObject requestJson) throws Exception {
         User user = requestJson.toJavaObject(User.class);
         if(!ComUtil.isEmpty(this.selectOne(new EntityWrapper<User>().eq("user_name", user.getUsername())))){
-            throw new BusinessException(PublicResultConstant.INVALID_USER_EXIST);
+            throw new BusinessException(CodeEnum.INVALID_USER_EXIST.getMsg(),CodeEnum.INVALID_USER_EXIST.getCode());
         }
         Role role = roleService.selectOne(
                 new EntityWrapper<Role>().eq("role_name", requestJson.getString("roleName")));
         if(ComUtil.isEmpty(role)){
-            throw new BusinessException(PublicResultConstant.INVALID_ROLE);
+            throw new BusinessException(CodeEnum.INVALID_ROLE.getMsg(),CodeEnum.INVALID_ROLE.getCode());
         }
         String userNo = GenerationSequenceUtil.generateUUID("user");
         if(!ComUtil.isEmpty(user.getMobile())){
             if(!StringUtil.checkMobileNumber(user.getMobile())){
-                throw new BusinessException(PublicResultConstant.MOBILE_ERROR);
+                throw new BusinessException(CodeEnum.MOBILE_ERROR.getMsg(),CodeEnum.MOBILE_ERROR.getCode());
             }
             infoToUserService.insert(InfoToUser.builder().identityInfo(user.getMobile())
                     .identityType(Constant.LOGIN_MOBILE).userNo(userNo)
@@ -274,7 +273,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         if(!ComUtil.isEmpty(user.getEmail())){
             if(!StringUtil.checkEmail(user.getEmail())){
-                throw new BusinessException(PublicResultConstant.EMAIL_ERROR);
+                throw new BusinessException(CodeEnum.EMAIL_ERROR.getMsg());
             }
             infoToUserService.insert(InfoToUser.builder().userNo(userNo)
                     .identityInfo(user.getEmail()).identityType(Constant.LOGIN_EMAIL).build());

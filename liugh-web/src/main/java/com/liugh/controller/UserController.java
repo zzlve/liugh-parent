@@ -6,10 +6,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.liugh.annotation.AccessLimit;
 import com.liugh.annotation.CurrentUser;
-import com.liugh.annotation.Pass;
+import com.liugh.annotation.Log;
 import com.liugh.annotation.ValidationParam;
-import com.liugh.base.Constant;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.config.ResponseHelper;
 import com.liugh.config.ResponseModel;
 import com.liugh.entity.User;
@@ -18,9 +16,7 @@ import com.liugh.util.ComUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,8 +43,9 @@ public class UserController {
      * @throws Exception
      */
     @GetMapping("/currentUser")
+    @Log(action="currentUser",modelName= "User",description="获取登录用户")
     public ResponseModel<User> getUser(@CurrentUser User user) throws Exception{
-        return ResponseHelper.buildResponseModel(user);
+        return ResponseHelper.succeed(user);
     }
 
     @PostMapping("/mobile")
@@ -56,14 +53,14 @@ public class UserController {
                                             @ValidationParam("newMobile,captcha")@RequestBody JSONObject requestJson )
             throws Exception{
         userService.resetMobile(currentUser,requestJson);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
     @PostMapping("/password")
     public ResponseModel<String> resetPassWord (@CurrentUser User currentUser,
             @ValidationParam("oldPassword,password,rePassword")@RequestBody JSONObject requestJson ) throws Exception{
         userService.resetPassWord(currentUser,requestJson);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
     /**
@@ -75,7 +72,7 @@ public class UserController {
     public ResponseModel<String> resetPassWord (@ValidationParam("userNo,password,rePassword")
                                                @RequestBody JSONObject requestJson ) throws Exception{
         userService.resetPassWord(userService.selectById(requestJson.getString("userNo")),requestJson);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
 
@@ -94,7 +91,7 @@ public class UserController {
             currentUser.setJob(requestJson.getString("job"));
         }
         userService.updateById(currentUser);
-        return ResponseHelper.buildResponseModel(currentUser);
+        return ResponseHelper.succeed(currentUser);
     }
 
     @GetMapping(value = "/pageList")
@@ -105,7 +102,7 @@ public class UserController {
     public ResponseModel<Page<User>> findList(@RequestParam(name = "pageIndex", defaultValue = "1", required = false) Integer pageIndex,
                                  @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize,
                                  @RequestParam(value = "username", defaultValue = "",required = false) String username) {
-        return ResponseHelper.buildResponseModel(userService.selectPage(new Page<>(pageIndex, pageSize),
+        return ResponseHelper.succeed(userService.selectPage(new Page<>(pageIndex, pageSize),
             ComUtil.isEmpty(username)?new EntityWrapper<User>(): new EntityWrapper<User>().like("user_name", username)));
     }
 
@@ -134,7 +131,7 @@ public class UserController {
         //自定义分页关联查询列表
         Page<User> userPage = userService.selectPageByConditionUser(new Page<User>(pageIndex, pageSize),info,status,
                 startTime,endTime);
-        return ResponseHelper.buildResponseModel(userPage);
+        return ResponseHelper.succeed(userPage);
     }
 
     @ApiOperation(value="获取用户详细信息", notes="根据url的id来获取用户详细信息")
@@ -146,7 +143,7 @@ public class UserController {
     //@RequiresRoles(value = {Constant.RoleType.SYS_ASMIN_ROLE,Constant.RoleType.ADMIN},logical =  Logical.OR)
     public ResponseModel<User> findOneUser(@PathVariable("userNo") String userNo) {
         User user = userService.selectById(userNo);
-        return ResponseHelper.buildResponseModel(user);
+        return ResponseHelper.succeed(user);
     }
 
     @ApiOperation(value="删除用户", notes="根据url的id来删除用户")
@@ -156,7 +153,7 @@ public class UserController {
     public ResponseModel deleteUser(@PathVariable("userNo") String userNo) throws Exception{
 
        userService.deleteByUserNo(userNo);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 }
 

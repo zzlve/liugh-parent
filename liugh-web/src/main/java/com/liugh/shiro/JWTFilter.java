@@ -1,14 +1,12 @@
 package com.liugh.shiro;
 
 import com.alibaba.fastjson.JSONObject;
+import com.liugh.base.CodeEnum;
 import com.liugh.base.Constant;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.config.ResponseHelper;
 import com.liugh.entity.User;
 import com.liugh.service.IUserService;
-import com.liugh.service.SpringContextBeanService;
 import com.liugh.util.ComUtil;
-import com.liugh.util.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -72,12 +70,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         if (isLoginAttempt(request, response)) {
             try {
                 executeLogin(request, response);
+                return true;
             } catch (AuthenticationException e) {
                 log.info(e.getMessage());
                 responseError(request, response);
             }
         }
-        return true;
+        return false;
     }
 
     private void setUserBean(ServletRequest request, ServletResponse response, JWTToken token) {
@@ -109,7 +108,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         }
         if(ComUtil.isEmpty(authorization)){
             responseError(request, response);
-            return false;
         }
         return super.preHandle(request, response);
     }
@@ -189,7 +187,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             outputStreamWriter = new OutputStreamWriter(response.getOutputStream(), "utf-8");
             response.setContentType("application/json; charset=utf-8");
             out = new BufferedWriter(outputStreamWriter);
-            out.write(JSONObject.toJSONString(ResponseHelper.validationFailure(PublicResultConstant.UNAUTHORIZED)));
+            out.write(JSONObject.toJSONString(ResponseHelper.failed2Message(CodeEnum.IDENTIFICATION_ERROR.getMsg())));
             out.flush();
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,7 +1,7 @@
 package com.liugh.config;
 
 import com.liugh.base.BusinessException;
-import com.liugh.base.PublicResultConstant;
+import com.liugh.base.CodeEnum;
 import com.liugh.exception.ParamJsonException;
 import org.apache.shiro.ShiroException;
 import org.slf4j.Logger;
@@ -40,10 +40,11 @@ public class AllControllerAdvice {
      */
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseModel<String> errorHandler(Exception ex) {
         ex.printStackTrace();
         logger.error("接口出现严重异常：{}", ex.getMessage());
-        return ResponseHelper.validationFailure(PublicResultConstant.FAILED);
+        return ResponseHelper.failed2Message(CodeEnum.ERROR.getMsg());
     }
 
     /**
@@ -55,7 +56,7 @@ public class AllControllerAdvice {
     @ExceptionHandler(ShiroException.class)
     @ResponseBody
     public ResponseModel<String> handleShiroException(ShiroException e) {
-        return ResponseHelper.validationFailure(PublicResultConstant.USER_NO_PERMITION);
+        return ResponseHelper.failedWith(null, CodeEnum.IDENTIFICATION_ERROR.getCode(),CodeEnum.IDENTIFICATION_ERROR.getMsg());
     }
 
     /**
@@ -66,18 +67,19 @@ public class AllControllerAdvice {
     @ExceptionHandler(BusinessException.class)
     @ResponseBody
     public ResponseModel handleBusinessException(BusinessException e) {
-        if(e instanceof BusinessException) {
-            logger.info("数据操作失败："+e.getMessage());
-            return ResponseHelper.validationFailure("数据操作失败："+e.getMessage());
+        String message = e.getMessage();
+        if(message.indexOf(":--:") > 0){
+            String[] split = message.split(":--:");
+            return ResponseHelper.failedWith(null,split[1],split[0]);
         }
-        return ResponseHelper.validationFailure(PublicResultConstant.ERROR);
+        return ResponseHelper.failedWith(null,CodeEnum.DATA_ERROR.getCode(),message);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(TemplateInputException.class)
     @ResponseBody
     public ResponseModel<String> handleTemplateInputException(TemplateInputException e) {
-        return ResponseHelper.validationFailure(PublicResultConstant.USER_NO_PERMITION);
+        return ResponseHelper.failed2Message(CodeEnum.USER_NO_PERMITION.getMsg());
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -86,9 +88,9 @@ public class AllControllerAdvice {
     public ResponseModel<String> handleParamJsonException(Exception e) {
         if(e instanceof ParamJsonException) {
             logger.info("参数错误："+e.getMessage());
-            return ResponseHelper.validationFailure("参数错误："+ e.getMessage());
+            return ResponseHelper.failed2Message("参数错误："+ e.getMessage());
         }
-        return ResponseHelper.validationFailure(PublicResultConstant.ERROR);
+        return ResponseHelper.failedWith(null,CodeEnum.PARAM_ERROR.getCode(),e.getMessage());
     }
 
 

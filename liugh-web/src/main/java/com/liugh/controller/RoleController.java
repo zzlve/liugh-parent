@@ -3,14 +3,11 @@ package com.liugh.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.liugh.base.Constant;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.config.ResponseHelper;
 import com.liugh.config.ResponseModel;
 import com.liugh.entity.Role;
 import com.liugh.model.RoleModel;
 import com.liugh.service.IRoleService;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +39,7 @@ public class RoleController {
         //根据姓名查分页
 //        Page<Role> rolePage = roleService.selectPage(new Page<>(pageIndex, pageSize),
 //                new EntityWrapper<Role>().where("role_name like {0}","%"+name+"%"));
-        return ResponseHelper.buildResponseModel(roleService.selectPage(new Page<>(pageIndex, pageSize)));
+        return ResponseHelper.succeed(roleService.selectPage(new Page<>(pageIndex, pageSize)));
     }
 
     /**
@@ -50,7 +47,7 @@ public class RoleController {
      */
     @GetMapping("/all")
     public  ResponseModel<List<Role>> getAllRole(){
-        return ResponseHelper.buildResponseModel(roleService.selectList(new EntityWrapper<Role>()));
+        return ResponseHelper.succeed(roleService.selectList(new EntityWrapper<Role>()));
     }
 
     /**
@@ -58,7 +55,7 @@ public class RoleController {
      */
     @GetMapping(value = "/{roleCode}")
     public ResponseModel getById(@PathVariable("roleCode") String roleCode)throws Exception{
-        return ResponseHelper.buildResponseModel(roleService.selectByRoleCode(roleCode));
+        return ResponseHelper.succeed(roleService.selectByRoleCode(roleCode));
     }
 
     /**
@@ -69,7 +66,7 @@ public class RoleController {
     //@RequiresRoles(value = {Constant.RoleType.SYS_ASMIN_ROLE,Constant.RoleType.ADMIN},logical =  Logical.OR)
     public ResponseModel deleteRole(@PathVariable("roleCode") String roleCode)throws Exception{
         roleService.deleteByRoleCode(roleCode);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
     /**
@@ -79,7 +76,7 @@ public class RoleController {
      */
     @PostMapping
     public ResponseModel addRole(RoleModel roleModel) throws Exception{
-        return ResponseHelper.buildResponseModel(roleService.addRoleAndPermission(roleModel));
+        return ResponseHelper.succeed(roleService.addRoleAndPermission(roleModel));
     }
 
     /**
@@ -88,7 +85,7 @@ public class RoleController {
     @PutMapping
     public ResponseModel updateRole(RoleModel roleModel) throws Exception{
         roleService.updateRoleInfo(roleModel);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
 

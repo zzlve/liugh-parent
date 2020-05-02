@@ -2,7 +2,6 @@ package com.liugh.controller;
 
 import com.liugh.base.BusinessException;
 import com.liugh.base.Constant;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.config.ResponseHelper;
 import com.liugh.config.ResponseModel;
 import com.liugh.util.ComUtil;
@@ -40,7 +39,7 @@ public class ResourceController {
                 );
             }
         }
-        return ResponseHelper.buildResponseModel(filePaths);
+        return ResponseHelper.succeed(filePaths);
     }
 
 
@@ -70,7 +69,7 @@ public class ResourceController {
                 filePaths.add(retMap);
             }
         }
-        return ResponseHelper.buildResponseModel(filePaths);
+        return ResponseHelper.succeed(filePaths);
     }
 
     @DeleteMapping
@@ -78,11 +77,11 @@ public class ResourceController {
         if(!ComUtil.isEmpty(filePaths) && filePaths.size() !=0){
             for (String item: filePaths) {
                 if(!FileUtil.deleteUploadedFile(item)){
-                    return ResponseHelper.validationFailure(PublicResultConstant.ERROR);
+                    return ResponseHelper.failed(null);
                 }
             }
         }
-        return ResponseHelper.buildResponseModel(filePaths);
+        return ResponseHelper.succeed(filePaths);
     }
 
 }

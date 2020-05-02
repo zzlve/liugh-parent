@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.liugh.annotation.CurrentUser;
 import com.liugh.annotation.ValidationParam;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.config.ResponseHelper;
 import com.liugh.config.ResponseModel;
 import com.liugh.entity.Notice;
@@ -43,7 +42,7 @@ public class NoticeController {
     public ResponseModel<Page<Notice>> findInfoList(@CurrentUser User user, @RequestParam(name = "pageIndex", defaultValue = "1", required = false) Integer pageIndex,
                                       @RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) throws Exception{
 
-        return ResponseHelper.buildResponseModel(noticeService.selectPage(new Page<>(pageIndex, pageSize),new EntityWrapper<Notice>().
+        return ResponseHelper.succeed(noticeService.selectPage(new Page<>(pageIndex, pageSize),new EntityWrapper<Notice>().
                 eq("mobile",user.getMobile()).orderBy("create_time",false)));
     }
 
@@ -55,7 +54,7 @@ public class NoticeController {
     @DeleteMapping
     public ResponseModel findInfoList(@CurrentUser User user) throws Exception{
         noticeService.deleteByNotices(user);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
     /**
@@ -68,7 +67,7 @@ public class NoticeController {
     public ResponseModel read(@ValidationParam("noticeId,isRead")
                              @RequestBody JSONObject requestJson) throws Exception{
         noticeService.read(requestJson);
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
     /**
      * 未读消息总数
@@ -77,7 +76,7 @@ public class NoticeController {
      */
     @GetMapping("/noReadCount")
     public ResponseModel getNoRead(@CurrentUser User user) throws Exception{
-        return ResponseHelper.buildResponseModel(noticeService.selectList(new
+        return ResponseHelper.succeed(noticeService.selectList(new
                 EntityWrapper<Notice>().where("mobile = {0} and is_read = 0",user.getMobile())).size());
     }
 

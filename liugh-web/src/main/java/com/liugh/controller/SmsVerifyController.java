@@ -42,7 +42,7 @@ public class SmsVerifyController {
     @Pass
     @Log(action="getCaptcha",modelName= "Sms",description="获取短信验证码接口")
    public ResponseModel<SmsVerify> getCaptcha (@PathVariable String smsType, @PathVariable String mobile) throws Exception{
-        return ResponseHelper.buildResponseModel(smsVerifyService.addAndGetMobileAndCaptcha(smsType,mobile));
+        return ResponseHelper.succeed(smsVerifyService.addAndGetMobileAndCaptcha(smsType,mobile));
    }
 
 
@@ -61,7 +61,7 @@ public class SmsVerifyController {
     public ResponseModel captchaCheck (@RequestParam String smsType,
             @RequestParam String mobile ,@RequestParam String captcha) throws Exception{
         smsVerifyService.captchaCheck(mobile,smsType,captcha);
-        return ResponseHelper.buildResponseModel(true);
+        return ResponseHelper.succeed(true);
     }
 }
 

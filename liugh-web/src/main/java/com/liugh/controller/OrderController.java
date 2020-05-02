@@ -1,6 +1,5 @@
 package com.liugh.controller;
 
-import com.liugh.annotation.Pass;
 import com.liugh.config.ResponseHelper;
 import com.liugh.config.ResponseModel;
 import com.liugh.entity.Order;
@@ -36,7 +35,7 @@ public class OrderController {
     public ResponseModel<Order> updateDeliver(@PathVariable String orderType, @RequestBody OrderModel orderModel)
             throws Exception {
         Order orderDef = orderService.handleOrder(OrderAction.deliver, OrderType.getInstance(orderType), orderModel);
-        return ResponseHelper.buildResponseModel(orderDef);
+        return ResponseHelper.succeed(orderDef);
     }
 
 

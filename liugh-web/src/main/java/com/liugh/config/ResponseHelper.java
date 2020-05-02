@@ -1,46 +1,42 @@
 package com.liugh.config;
 
-import org.springframework.http.HttpStatus;
+import com.liugh.base.CodeEnum;
+
+import java.io.Serializable;
 
 /**
  * 统一返回相应参数
  * @author liugh 53182347@qq.com
  */
-public class ResponseHelper {
+public class ResponseHelper<T> implements Serializable {
 
-    public ResponseHelper() {
+
+    public static <T> ResponseModel<T> succeed(T model, String msg) {
+        return succeed(model, CodeEnum.SUCCESS.getCode(), msg);
     }
 
-    public static <T> ResponseModel<T> notFound(String message) {
-        ResponseModel response = new ResponseModel();
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setCode(HttpStatus.NOT_FOUND.getReasonPhrase());
-        response.setMessage(message);
-        return response;
+    public static <T> ResponseModel<T> succeed(T model) {
+        return succeed(model, CodeEnum.SUCCESS.getCode(), CodeEnum.SUCCESS.getMsg());
     }
 
-    public static <T> ResponseModel<T> internalServerError(String message) {
-        ResponseModel response = new ResponseModel();
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setCode(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        response.setMessage(message);
-        return response;
+    public static <T> ResponseModel<T> succeed(T datas, String code, String msg) {
+        return new ResponseModel<T>(datas, code, msg);
     }
 
-    public static <T> ResponseModel<T> validationFailure(String message) {
-        ResponseModel response = new ResponseModel();
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setCode(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        response.setMessage(message);
-        return response;
+    public static <T> ResponseModel<T> failed2Message(String msg) {
+        return failedWith(null, CodeEnum.ERROR.getCode(), msg);
     }
 
-    public static <T> ResponseModel<T> buildResponseModel(T result) {
-        ResponseModel response = new ResponseModel();
-        response.setStatus(HttpStatus.OK.value());
-        response.setCode(HttpStatus.OK.getReasonPhrase());
-        response.setMessage(HttpStatus.OK.getReasonPhrase());
-        response.setResult(result);
-        return response;
+    public static <T> ResponseModel<T> failed(T model, String msg) {
+        return failedWith(model, CodeEnum.ERROR.getCode(), msg);
     }
+    public static <T> ResponseModel<T> failed(T model) {
+        return failedWith(model, CodeEnum.ERROR.getCode(), CodeEnum.ERROR.getMsg());
+    }
+
+
+    public static <T> ResponseModel<T> failedWith(T datas, String code, String msg) {
+        return new ResponseModel<>(datas, code, msg);
+    }
+
 }

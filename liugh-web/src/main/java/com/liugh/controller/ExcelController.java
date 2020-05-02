@@ -4,7 +4,6 @@ import com.github.crab2died.ExcelUtils;
 import com.github.crab2died.sheet.wrapper.NoTemplateSheetWrapper;
 import com.github.crab2died.sheet.wrapper.NormalSheetWrapper;
 import com.liugh.annotation.Pass;
-import com.liugh.base.PublicResultConstant;
 import com.liugh.config.ResponseHelper;
 import com.liugh.config.ResponseModel;
 import com.liugh.model.Student1;
@@ -54,7 +53,7 @@ public class ExcelController {
         os.close();
         // 不基于模板导出Excel
         ExcelUtils.getInstance().exportObjects2Excel(list, Student1.class, true, null, true, "E://B.xlsx");
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
     // 基于模板、注解的多sheet导出
@@ -86,7 +85,7 @@ public class ExcelController {
         ExcelUtils.getInstance().normalSheet2Excel(sheets, tempPath, "E://AA.xlsx");
         ExcelUtils.getInstance().normalSheet2Excel(sheets, tempPath, os);
         os.close();
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
 
@@ -119,7 +118,7 @@ public class ExcelController {
 
         ExcelUtils.getInstance().exportMap2Excel("/excelTemplate/map_template.xlsx",
                 0, classes, data, Student1.class, false, "E://C.xlsx");
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
     @GetMapping(value = "/testList2Excel")
     public ResponseModel testList2Excel() throws Exception{
@@ -136,7 +135,7 @@ public class ExcelController {
         ExcelUtils.getInstance().exportObjects2Excel(list2, header, "E://D.xlsx");
 
 
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
     //多sheet无模板、基于注解的导出
@@ -153,7 +152,7 @@ public class ExcelController {
         }
         ExcelUtils.getInstance().noTemplateSheet2Excel(sheets, "E://EE.xlsx");
 
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
     @GetMapping(value = "/excel2Object")
     public ResponseModel excel2Object() throws Exception{
@@ -169,7 +168,7 @@ public class ExcelController {
         for (Student1 stu : students) {
             System.out.println(stu);
         }
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
 
@@ -193,7 +192,7 @@ public class ExcelController {
         for (Student2 st : students) {
             System.out.println(st);
         }
-        return ResponseHelper.buildResponseModel(PublicResultConstant.SUCCEED);
+        return ResponseHelper.succeed(null);
     }
 
 }
