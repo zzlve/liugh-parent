@@ -1,6 +1,7 @@
 package com.liugh.base;
 
-import java.util.HashSet;
+import com.google.common.collect.Sets;
+
 import java.util.Set;
 
 /**
@@ -11,7 +12,7 @@ public class Constant {
 
     public static final int BYTE_BUFFER = 1024;
 
-    public static Set<String>  METHOD_URL_SET = new HashSet<>();
+    public static Set<String>  METHOD_URL_SET = Sets.newConcurrentHashSet();
 
     /**
      * 用户注册默认角色

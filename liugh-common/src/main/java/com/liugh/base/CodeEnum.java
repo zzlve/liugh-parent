@@ -9,7 +9,7 @@ public enum CodeEnum {
     ERROR("20000","操作失败"),
     IDENTIFICATION_ERROR("20001","身份异常"),
     DATA_ERROR("20002","业务错误"),
-    PARAM_ERROR("20002","业务错误"),
+    PARAM_ERROR("20003","参数错误"),
     EMAIL_ERROR("20004","邮箱格式错误"),
     ADMIN_ERROR("20005","不能修改管理员信息!"),
     INVALID_USERNAME_PASSWORD("20006","用户名或密码错误"),

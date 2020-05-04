@@ -4,9 +4,11 @@ import com.liugh.base.BusinessException;
 import com.liugh.base.CodeEnum;
 import com.liugh.exception.ParamJsonException;
 import org.apache.shiro.ShiroException;
+import org.apache.shiro.authc.AuthenticationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -35,17 +37,6 @@ public class AllControllerAdvice {
     public void addAttributes(Model model) {
     }
 
-    /**
-     * 全局异常捕捉处理
-     */
-    @ResponseBody
-    @ExceptionHandler(value = Exception.class)
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseModel<String> errorHandler(Exception ex) {
-        ex.printStackTrace();
-        logger.error("接口出现严重异常：{}", ex.getMessage());
-        return ResponseHelper.failed2Message(CodeEnum.ERROR.getMsg());
-    }
 
     /**
      * 捕捉shiro的异常
@@ -56,6 +47,13 @@ public class AllControllerAdvice {
     @ExceptionHandler(ShiroException.class)
     @ResponseBody
     public ResponseModel<String> handleShiroException(ShiroException e) {
+        return ResponseHelper.failedWith(null, CodeEnum.IDENTIFICATION_ERROR.getCode(),CodeEnum.IDENTIFICATION_ERROR.getMsg());
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseBody
+    public ResponseModel<String> handleShiroException(AuthenticationException e) {
         return ResponseHelper.failedWith(null, CodeEnum.IDENTIFICATION_ERROR.getCode(),CodeEnum.IDENTIFICATION_ERROR.getMsg());
     }
 
@@ -93,5 +91,27 @@ public class AllControllerAdvice {
         return ResponseHelper.failedWith(null,CodeEnum.PARAM_ERROR.getCode(),e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    @ResponseBody
+    public ResponseModel<String> handleParamJsonException(HttpMessageNotReadableException e) {
+        if(e instanceof HttpMessageNotReadableException) {
+            logger.info("参数错误："+e.getMessage());
+            return ResponseHelper.failed2Message("参数错误："+ e.getMessage());
+        }
+        return ResponseHelper.failedWith(null,CodeEnum.PARAM_ERROR.getCode(),e.getMessage());
+    }
+
+    /**
+     * 全局异常捕捉处理
+     */
+    @ResponseBody
+    @ExceptionHandler(value = Exception.class)
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseModel<String> errorHandler(Exception ex) {
+        ex.printStackTrace();
+        logger.error("接口出现严重异常：{}", ex.getMessage());
+        return ResponseHelper.failed2Message(CodeEnum.ERROR.getMsg());
+    }
 
 }

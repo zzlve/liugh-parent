@@ -1,6 +1,7 @@
 package com.liugh.shiro;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.liugh.base.CodeEnum;
 import com.liugh.base.Constant;
 import com.liugh.config.ResponseHelper;
@@ -9,6 +10,7 @@ import com.liugh.service.IUserService;
 import com.liugh.util.ComUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.protocol.HTTP;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
@@ -67,6 +69,10 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        String requestURI = ((HttpServletRequest) request).getRequestURI();
+        if(Constant.METHOD_URL_SET.contains(requestURI)){
+            return true;
+        }
         if (isLoginAttempt(request, response)) {
             try {
                 executeLogin(request, response);
@@ -102,85 +108,13 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             httpServletResponse.setStatus(HttpStatus.OK.value());
             return false;
         }
-        String authorization = httpServletRequest.getHeader("Authorization");
-        if (verificationPassAnnotation(request, response, httpServletRequest, authorization)){
-            return true;
-        }
-        if(ComUtil.isEmpty(authorization)){
-            responseError(request, response);
-        }
         return super.preHandle(request, response);
-    }
-
-    /**
-     * 验证请求方法是否有@Pass注解,有则直接放行
-     * @param request
-     * @param response
-     * @param httpServletRequest
-     * @param authorization
-     * @return
-     * @throws Exception
-     */
-    private boolean verificationPassAnnotation(ServletRequest request, ServletResponse response, HttpServletRequest httpServletRequest, String authorization) throws Exception {
-        for (String urlMethod: Constant.METHOD_URL_SET) {
-            String[] split = urlMethod.split(":--:");
-            if(split[0].equals(httpServletRequest.getRequestURI())
-                    && (split[1].equals(httpServletRequest.getMethod()) ||  split[1].equals("RequestMapping"))){
-                Constant.isPass=true;
-                if(ComUtil.isEmpty(authorization)){
-                    //如果当前url不需要认证，则注入当前登录用户时，给一个空的
-                    httpServletRequest.setAttribute("currentUser",new User());
-                    return true;
-                }else {
-                    super.preHandle(request, response);
-                }
-            }
-            if(StringUtils.countMatches(urlMethod, "{")>0 &&
-                    StringUtils.countMatches(urlMethod, "/") == StringUtils.countMatches(split[0], "/")
-                    && (split[1].equals(httpServletRequest.getMethod()) ||  split[1].equals("RequestMapping"))){
-                if(isSameUrl(split[0],httpServletRequest.getRequestURI())){
-                    Constant.isPass=true;
-                    if(ComUtil.isEmpty(authorization)){
-                        httpServletRequest.setAttribute("currentUser",new User());
-                        return true;
-                    }else {
-                        super.preHandle(request, response);
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 判断路径参数的url是否和controller方法url一致
-     * @param localUrl
-     * @param requestUrl
-     * @return
-     */
-    private boolean isSameUrl(String localUrl,String requestUrl){
-        String[] tempLocalUrls = localUrl.split("/");
-        String[] tempRequestUrls = requestUrl.split("/");
-        if(tempLocalUrls.length != tempRequestUrls.length){
-            return false;
-        }
-        StringBuilder sbLocalUrl =new StringBuilder();
-        StringBuilder sbRequestUrl =new StringBuilder();
-        for (int i = 0; i < tempLocalUrls.length; i++) {
-            if(StringUtils.countMatches(tempLocalUrls[i], "{") > 0){
-                tempLocalUrls[i]="*";
-                tempRequestUrls[i]="*";
-            }
-            sbLocalUrl.append(tempLocalUrls[i]+"/");
-            sbRequestUrl.append(tempRequestUrls[i]+"/");
-        }
-        return sbLocalUrl.toString().trim().equals(sbRequestUrl.toString().trim());
     }
 
     /**
      * 非法url返回身份错误信息
      */
-       private void responseError(ServletRequest request, ServletResponse response) {
+     private void responseError(ServletRequest request, ServletResponse response) {
         Writer out= null;
         OutputStreamWriter outputStreamWriter =null;
         try {

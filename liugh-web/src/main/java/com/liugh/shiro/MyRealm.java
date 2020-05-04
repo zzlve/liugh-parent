@@ -15,7 +15,10 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -89,7 +92,9 @@ public class MyRealm extends AuthorizingRealm {
             this.userService = SpringContextBeanService.getBean(IUserService.class);
         }
         String token = (String) auth.getCredentials();
-        if(Constant.isPass){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        if(Constant.METHOD_URL_SET.contains(request.getRequestURI())){
+            request.setAttribute("currentUser",new User());
             return new SimpleAuthenticationInfo(token, token, this.getName());
         }
         // 解密获得username，用于和数据库进行对比

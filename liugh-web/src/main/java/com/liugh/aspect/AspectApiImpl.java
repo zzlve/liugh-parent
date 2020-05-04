@@ -13,7 +13,6 @@ public class AspectApiImpl implements AspectApi {
 
     @Override
     public Object doHandlerAspect(ProceedingJoinPoint pjp, Method method) throws Throwable {
-        Constant.isPass=false;
         return null;
     }
 }
