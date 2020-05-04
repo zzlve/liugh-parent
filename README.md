@@ -1,7 +1,8 @@
 # bx-cloud
 
 
-##由于升级到了SpringCloud，认证授权改为SpringSecurity Oauth2.0,需要SpringBoot+JWT+Shiro+MybatisPlus，请切换至[springboot](https://github.com/qq53182347/liugh-parent/tree/springboot)分支
+#注意
+由于升级到了SpringCloud，认证授权改为SpringSecurity Oauth2.0,需要SpringBoot+JWT+Shiro+MybatisPlus单项目架构的，请切换至[springboot](https://github.com/qq53182347/liugh-parent/tree/springboot)分支
 
 ### 一、背景
 
@@ -13,7 +14,10 @@ Spring Cloud Security 为构建安全的SpringBoot应用提供了一系列解决
 [Mybatis-Plus](https://github.com/baomidou/mybatis-plus)是一个 [Mybatis](http://www.mybatis.org/mybatis-3/) 的增强工具，有代码生成器，并且提供了类似hibernate的单表CRUD操作，又保留了mybatis的特性支持定制化 SQL。
 
 [Nacos](http://dubbo.apache.org/zh-cn/docs/user/references/registry/nacos.html) 致力于帮助您发现、配置和管理微服务。Nacos 提供了一组简单易用的特性集，帮助您实现动态服务发现、服务配置管理、服务及流量管理。
+
+
 [LCN](http://www.txlcn.org/zh-cn/)并不生产事务，LCN只是本地事务的协调工.一个高性能的分布式事务框架.
+
 
 项目用到的技术:
 Spring Boot +Spring Cloud +Spring Security Oauth2 +JWT +MybatisPlus +Mysql +Redis +Nacos +LCN +Zuul
