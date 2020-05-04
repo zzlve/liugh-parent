@@ -1,42 +1,52 @@
 # bx-cloud
 
-## 一、背景
+
+##由于升级到了SpringCloud，认证授权改为SpringSecurity Oauth2.0,需要SpringBoot+JWT+Shiro+MybatisPlus，请切换至[springboot](https://github.com/qq53182347/liugh-parent/tree/springboot)分支
+
+### 一、背景
 
 前后端分离已经成为互联网项目开发标准，它会为以后的大型分布式架构打下基础。[SpringBoot](https://projects.spring.io/spring-boot/)使编码配置部署都变得简单，越来越多的互联网公司已经选择SpringBoot作为微服务的入门级微框架。
 
+[Spring Cloud Oauth2](https://projects.spring.io/spring-security-oauth/docs/oauth2.html)
+Spring Cloud Security 为构建安全的SpringBoot应用提供了一系列解决方案，结合Oauth2可以实现单点登录、令牌中继、令牌交换等功能.
+
 [Mybatis-Plus](https://github.com/baomidou/mybatis-plus)是一个 [Mybatis](http://www.mybatis.org/mybatis-3/) 的增强工具，有代码生成器，并且提供了类似hibernate的单表CRUD操作，又保留了mybatis的特性支持定制化 SQL。
 
-由于升级到了SpringCloud，认证和授权改用SpringSecurity Oauth2.0。如果需要看原来shiro单项目版本，请选择springboot分支。
+[Nacos](http://dubbo.apache.org/zh-cn/docs/user/references/registry/nacos.html) 致力于帮助您发现、配置和管理微服务。Nacos 提供了一组简单易用的特性集，帮助您实现动态服务发现、服务配置管理、服务及流量管理。
+[LCN](http://www.txlcn.org/zh-cn/)并不生产事务，LCN只是本地事务的协调工.一个高性能的分布式事务框架.
 
-现在API越来越流行，如何安全保护这些API？ [JSON Web Tokens](https://jwt.io/)(JWT)能提供基于JSON格式的安全认证。JWT可以跨不同语言，自带身份信息，并且非常容易传递。项目基于灵活配置方式选择是uuid的令牌还是JWT令牌
+项目用到的技术:
+Spring Boot +Spring Cloud +Spring Security Oauth2 +JWT +MybatisPlus +Mysql +Redis +Nacos +LCN +Zuul
 
-## 二、项目特性
+|  工程名   | 说明  |
+|  ----  | ----  |
+| bx-commons  | 数据传输对象、常量\工具类、公共常量 |
+| bx-core-server  | 核心服务,必须启动的两个服务|
+| --register-config-center  | 注册配置中心(Nacos) |
+| --user-center  |用户认证授权 |
+| bx-gateway-zuul  | 网关 |
+| bx-files-server  | 文件中心 |
+| bx-transaction-server  | 分布式事务服务 |
+
+
+
+### 二、项目特性
 
 1.自定义@Log注解自动记录日志到数据库。
 
-2.自定义@Pass注解接口不用进行认证身份。
 
-3.使用JSONObject统一获取body请求参数，减少实体类的数量。完成自定义@ValidationParam注解验证请求参数是否为空。
+2.过滤请求参数，防止XSS攻击。
 
-      ![](https://oscimg.oschina.net/oscnet/f3baf3e96123d41a8fff8bf2ac62684b9bb.jpg)
 
-4.使用bcrypt算法加密密码，著名代码托管网站Github和美国军方防火墙同样采用此算法，靠bcrypt算法会成功保住密码强度不算很高的大部分账户。
+3.完成微信/微博/QQ第三方登录功能，完成用户名电话邮箱三种方式登录,WebSocket实时消息推送,短信登录注册等功能.
 
-5.搭配Shiro注解配置权限，高度灵活，提供按钮级别的权限控制，后端接口只验证权限，不看角色。用自定义@CurrentUser注解获取当前登录用户，Controlle层统一异常处理：
+4.完成方法限流注解,重要防刷方法被访问距离下一次时间可调节
 
-     ![](https://static.oschina.net/uploads/space/2018/0512/234950_u2kv_3577599.png)
+5.自己实现轻量级工作流,用状态机完成
 
-6.用SpringAOP切面编程进行声明式事务(service层增删改方法命名规范会自动加上事务)，过滤请求参数，防止XSS攻击。
+6.整合快捷操作excel组件,加快开发速度
 
-7.完成微信/微博/QQ第三方登录功能，完成用户名电话邮箱三种方式登录,WebSocket实时消息推送,短信登录注册等功能.
-
-8.完成方法限流注解,重要防刷方法被访问距离下一次时间可调节
-
-9.自己实现轻量级工作流,用状态机完成
-
-10.整合快捷操作excel组件,加快开发速度
-
-## 三、程序逻辑
+### 三、程序逻辑
 
 1.填写用户名密码用POST请求访问/login接口，返回token令牌等信息，失败则直接返回身份错误信息。
 
@@ -45,24 +55,20 @@
 3.服务端进行token认证，失败身份错误信息。
 
 
-## 四、运行项目
+### 四、运行项目
 
 
 -   通过git下载源码，本项目基于JDK1.8
 
 -   采用Maven项目管理，模块化，导入IDE时直接选定liugh-parent的pom导入
 
--   升级的SpringCloud版，基本环境只需要启动MySQL，Redis和bx-core-server里的两个服务。
+-   本项目SpringCloud版，基本环境只需要启动MySQL，Redis和bx-core-server里的两个服务，其他服务根据需要启动。
 
 -   每个项目中的sql文件对应一个数据库先创建好。
 
--   启动顺序Redis-->MySQL-->register-config-center-->user-center
+-   启动顺序Redis-->MySQL-->register-config-center(RegisterConfigCenter.java)-->user-center(UserCenterApplication.java)
 
--   其他服务根据需要启动
-
--   修改bootstrap.properties，更新MySQL，Redis账号和密码。
-
--   Eclipse、IDEA运行每个项目的XXApplication.java启动类。或在liugh-parent目录下运行命令mvn clean package，然后在每个项目/target目录下运行java -jar xx.jar命令
+-   修改bootstrap.properties中注册中心\数据库等地址，更新MySQL，Redis账号和密码。
 
 -   访问登录接口：localhost:8000/oauth/user/token
 
@@ -94,7 +100,6 @@
 
 
 ![](https://oscimg.oschina.net/oscnet/up-82beddfedc2723fc46f04606ac698792659.png)
-
 
 
 
