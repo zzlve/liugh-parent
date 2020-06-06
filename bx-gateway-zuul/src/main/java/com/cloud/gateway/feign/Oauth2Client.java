@@ -7,14 +7,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("oauth-center")
+@FeignClient("user-center")
 public interface Oauth2Client {
 
     /**
      * 获取access_token<br>
      * 这是spring-security-oauth2底层的接口，类TokenEndpoint<br>
-     * 感兴趣可看下视频章节05.5 生成access_token的核心源码
-     *
      * @param parameters
      * @return
      * @see org.springframework.security.oauth2.provider.endpoint.TokenEndpoint

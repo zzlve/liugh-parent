@@ -47,7 +47,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 				.accessDeniedHandler(new MyAccessDeniedHandler())
 				.and().authorizeRequests()
 				//放行注解url
-				.antMatchers(PermitAllUrl.permitAllUrl("/api-f/**","/api-u/**","/api-m/**")).permitAll() // 放开权限的url
+				.antMatchers(PermitAllUrl.permitAllUrl("/api-f/**","/api-u/**","/api-m/**","/sys/login")).permitAll() // 放开权限的url
 				.anyRequest().authenticated().and().httpBasic();
 	}
 

@@ -80,7 +80,7 @@ public class AppUserServiceImpl  extends ServiceImpl<AppUserDao, AppUser> implem
         appUser.setEnabled(appUser.getEnabled());
         appUser.setCreateTime(System.currentTimeMillis());
         appUser.setUpdateTime(appUser.getCreateTime());
-        appUser.setOrganizationId(1);//暂时默认是天创机构
+        appUser.setOrganizationId(1);//随便默认值
         if(ComUtil.isEmpty(appUser.getId())){
             if (StringUtils.isBlank(appUser.getPassword())) {
                 throw new GFCException("密码不能为空");
