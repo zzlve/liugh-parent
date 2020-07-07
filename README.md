@@ -4,6 +4,8 @@
 #注意
 由于升级到了SpringCloud，认证授权改为SpringSecurity Oauth2.0,需要SpringBoot+JWT+Shiro+MybatisPlus单项目架构的，请切换至[springboot](https://github.com/qq53182347/liugh-parent/tree/springboot)分支
 
+github网速如果不好,请使用网盘地址:链接：https://pan.baidu.com/s/1dkEHqCS0xWl9Htfdww2vkQ  提取码：ah39
+
 ### 一、背景
 
 前后端分离已经成为互联网项目开发标准，它会为以后的大型分布式架构打下基础。[SpringBoot](https://projects.spring.io/spring-boot/)使编码配置部署都变得简单，越来越多的互联网公司已经选择SpringBoot作为微服务的入门级微框架。
