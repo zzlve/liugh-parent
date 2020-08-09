@@ -4,6 +4,15 @@
 #注意
 由于升级到了SpringCloud，认证授权改为SpringSecurity Oauth2.0,需要SpringBoot+JWT+Shiro+MybatisPlus单项目架构的，请切换至[springboot](https://github.com/qq53182347/liugh-parent/tree/springboot)分支
 
+github网速如果不好,请使用网盘地址:链接：https://pan.baidu.com/s/1dkEHqCS0xWl9Htfdww2vkQ  提取码：ah39
+
+前端(vue  angular react html 版本都有,目前需自己调试,链接：https://pan.baidu.com/s/1hMTlZtwaor1kROmoARzk7A  提取码：low5):
+![](https://oscimg.oschina.net/oscnet/up-5d67fec24fa4f24eeb5e714ea93da59db22.png)
+![](https://oscimg.oschina.net/oscnet/up-a908358bc735192b532b025861ee25460de.png)
+
+
+
+
 ### 一、背景
 
 前后端分离已经成为互联网项目开发标准，它会为以后的大型分布式架构打下基础。[SpringBoot](https://projects.spring.io/spring-boot/)使编码配置部署都变得简单，越来越多的互联网公司已经选择SpringBoot作为微服务的入门级微框架。
@@ -91,7 +100,7 @@ Spring Boot +Spring Cloud +Spring Security Oauth2 +JWT +MybatisPlus +Mysql +Redi
 -   获取token访问其他接口
 
 -   注意!!!!!编译器请安装lombok插件,不然会报红
-
+ 
 
 运行截图：
 
